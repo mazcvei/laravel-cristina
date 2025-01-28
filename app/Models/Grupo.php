@@ -29,6 +29,10 @@ class Grupo extends Model
     return $this->belongsToMany(User::class, 'usuarios_grupos', 'grupo_id', 'user_id');
     }
 
+    public function mensajes(){
+        return $this->hasMany(Mensaje::class, 'grupo_id', 'id');
+    } 
+
 
 
 }

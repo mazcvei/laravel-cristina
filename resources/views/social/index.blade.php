@@ -26,10 +26,12 @@
           <div class="chat-person-list">
             <ul class="list-inline">
               @foreach($grupos as $grupo)
-                <li>
-                  <a href="#" class="flip" 
-                    data-nombre="{{ $grupo->nombre }}" 
-                    data-foto="https://i.ibb.co/fCzfFJw/person.jpg"> <!-- FOTO DINÁMICA -->
+                <li class="flip"
+                  data-id = "{{$grupo->id}}"
+                  data-nombre="{{ $grupo->nombre }}" 
+                  data-foto="https://i.ibb.co/fCzfFJw/person.jpg"> <!-- FOTO DINÁMICA -->
+                >
+                  <a href="#" 
                     <img src="https://i.ibb.co/fCzfFJw/person.jpg" alt="Foto del grupo" width="40px">
                     <span>{{ $grupo->nombre }}</span>
                     <span class="chat-time">{{ $grupo->updated_at->format('h:i A') }}</span>
@@ -78,7 +80,7 @@
 
           <!-- Mensajes -->
           <div class="msg_history">
-            <div class="incoming_msg">
+            <div class="incoming_msg" id="contenedor_mensajes">
               <div class="incoming_msg_img">
                 <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil">
               </div>
@@ -88,6 +90,7 @@
                   <span class="time_date">11:01 AM | June 9</span>
                 </div>
               </div>
+
             </div>
             <div class="outgoing_msg">
               <div class="sent_msg">
@@ -119,14 +122,40 @@
 <script>
   $(document).ready(function() {
     // Al hacer clic en un grupo
+    
+
     $(".flip").click(function(e) {
       e.preventDefault();
 
       // Obtener datos del grupo
+      let idGrupo = $(this).data("id");
       var grupoNombre = $(this).data("nombre");
       var grupoFoto = $(this).data("foto");
       var hora = $(this).find(".chat-time").text();
+   
+      let url = `{{route('getMensajes',['id' => '__ID__'])}}`.replace('__ID__',idGrupo)
+      console.log(url)
+    
+      const response = fetch(url,{
+        method: "GET",
+        headers : {
+          'X-CSRF-TOKEN' : "{{csrf_token()}}"
+        }
+      }).then(response=>{
+        if(!response.ok){
 
+        }
+        return response.json()
+      }).then(data=>{
+        console.log(data.mensajes);
+        data.mensajes.forEach(mensaje => {
+             console.log(mensaje.texto)
+          });
+
+      })
+       
+    
+    
       // Actualizar la caja de mensajes
       $("#grupo-nombre").text(grupoNombre);
       $("#grupo-imagen").attr("src", grupoFoto);
